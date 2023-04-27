@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>System</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      th {
+        text-align: left;
+      }
+      button {
+        margin-right: 10px;
+      }
+      h1 {
+        text-align: center;
+      }
+      body {
+        background-color:antiquewhite;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>基于区块链的去中心化数字证据存证系统</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-4">
+          <form>
+            <label for="file">选择文件：</label>
+            <input type="file" id="file"><br>
+            <button type="button" onclick="calculateHash()">计算哈希值</button>
+            <button type="button" class="btn1" onclick="printHash()" id="upload" disabled>暂时不可上传</button>
+            <div id="result"></div>
+          </form>
+        </div>
+        <div class="col-sm-8 offset-sm-3">
+          <p><strong>文件验证</strong></p>
+          <input type="text" id="verified" size="70">
+          <button type="button" class="btn2" id="verif">验证</button>
+          <br><br>
+          <p><strong>文件查询</strong></p>
+          <input type="text" id="verified2" size="3">
+          <button type="button" class="btn3" id="verifg">查询</button>
+        </div>
+      </div>
+    </div>
+    
+    
+    <br><br>
+    
+    <div class="container">
+      <br><br>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>文件名</th>
+            <td><p id="filename"></p></td>
+          </tr>
+          <tr>
+            <th>时间戳</th>
+            <td><p id="timestamp"></p></td>
+          </tr>
+          <tr>
+            <th>区块号</th>
+            <td><p id="blocknumber"></p></td>
+          </tr>
+          <tr>
+            <th>哈希值</th>
+            <td><p id="has value"></p></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br><br>
+    <div class="container">
+      <h4><strong style="color: red;">区块状态</strong></h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Block Number</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody id="latestBlocks">
+        </tbody>
+      </table>
+
+      <h4><strong style="color: red;">最新交易</strong></h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Block Number</th>
+            <th>Tx Hash</th>
+          </tr>
+        </thead>
+        <tbody id="latestTxs">
+        </tbody>
+      </table>
+    </div>
+    
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+      var fileHash;
+      var someCondition = false;
+      function calculateHash() {
+        var file = document.getElementById("file").files[0];
+        if (!file) {
+          alert("请选择文件");
+          return;
+        }
+        document.getElementById("filename").innerText = "";
+        document.getElementById("timestamp").innerHTML = "";
+        document.getElementById("blocknumber").innerHTML = "";
+        document.getElementById("has value").innerHTML = "";
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          var wordArray = CryptoJS.lib.WordArray.create(event.target.result);
+          fileHash = CryptoJS.SHA256(wordArray); 
+          document.getElementById("result").innerHTML =
+            fileHash.toString();
+            someCondition = true;
+            document.getElementById('upload').disabled = false;
+            document.getElementById('upload').innerText = "可上传";
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      const myButton = document.getElementById('upload');
+      if (someCondition) {
+        myButton.disabled = false; 
+      }
+
+      async function printHash() {
+        if (fileHash) {
+          var hash = await new Promise(resolve => {
+            resolve(fileHash.toString());
+          });
+          someCondition = false;
+          document.getElementById('upload').innerText = "上传中...";
+        }
+      }
+    </script>
+  </body>
+</html>
